@@ -1,0 +1,1106 @@
+/* ═══════════════════════════════════════════════════════════════════
+   UNREALESE — Proposta / Verti Gestão de Obras
+   Folha isolada: não importa nem sobrescreve assets/css/style.css.
+   Os tokens abaixo são os mesmos da home, repetidos aqui de propósito
+   para que a página continue de pé mesmo se o site principal mudar.
+
+   Princípio da página: a arte da identidade fica em força total e fixa
+   na viewport — a proposta inteira desliza por cima dela. Quem garante
+   a leitura é o vidro das peças, não o escurecimento do fundo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root{
+  --brand-1:#8E349E;
+  --brand-2:#B93A53;
+  --brand-3:#E43030;
+  --brand-gradient:linear-gradient(100deg,var(--brand-1) 0%,var(--brand-2) 52%,var(--brand-3) 100%);
+
+  --cta-1:#7F24ED;
+  --cta-2:#B0357E;
+  --cta-3:#F32D22;
+  --cta-gradient:linear-gradient(90deg,var(--cta-1) 0%,var(--cta-2) 50%,var(--cta-3) 100%);
+
+  --bg:#000;
+  --ink:#fff;
+  --ink-muted:#808080;
+
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+
+  /* Mesmos limites de coluna da home, para a proposta cair no mesmo
+     alinhamento visual quando aberta lado a lado. */
+  --pad:clamp(24px,9vw,200px);
+  --wide:1760px;
+
+  /* ── Diagramação ──────────────────────────────────────────────────
+     Um só conjunto de medidas para a página inteira. Antes cada bloco
+     trazia as suas: duas grades diferentes entre as seções, recuo de
+     26px nos cards contra 58px na faixa, e nove corpos de texto com
+     pares quase iguais (46,4 e 44,8 / 20,48 e 17,6). Daqui para baixo
+     nada declara número solto — tudo sai destes tokens. */
+
+  --gap:clamp(12px,1.3vw,18px);      /* vão da grade e entre blocos */
+  --pad-block:clamp(20px,1.8vw,26px);/* recuo interno de todo bloco */
+  --pad-block-lg:clamp(34px,4vw,60px);/* só no eixo vertical, nos de destaque */
+
+  /* Escala tipográfica: cada degrau é claramente distinto do vizinho */
+  --fs-display:clamp(2.5rem,6.6vw,7.2rem);  /* abertura */
+  --fs-title:clamp(1.9rem,4.4vw,3.6rem);    /* todo título de seção */
+  --fs-stat:clamp(1.7rem,2.9vw,2.6rem);     /* número dentro de card */
+  /* o valor usa o mesmo degrau dos outros números da proposta: quem o
+     destaca é o contraste da peça, não o corpo da fonte */
+  --fs-lead:clamp(.94rem,1.2vw,1.1rem);     /* subtítulo e texto de faixa */
+  --fs-body:clamp(.92rem,1.08vw,1rem);      /* corpo e listas */
+  --fs-small:clamp(.82rem,.95vw,.9rem);     /* observações */
+  --fs-micro:11px;                          /* rótulos e numeração */
+
+  --lh-lead:1.6;
+  --lh-body:1.6;
+  --lh-tight:1.1;
+
+  --ls-micro:.17em;                  /* entreletra dos rótulos em caixa alta */
+  --mb-micro:clamp(12px,1.1vw,16px); /* respiro abaixo de todo rótulo */
+}
+
+/* A largura útil da página, numa conta só.
+   O .bento chega nela por outro caminho — limite de --wide e depois
+   padding-inline —, e os blocos soltos (valor e faixa) precisam cair
+   exatamente no mesmo lugar. Antes eles usavam `100% - 2*pad` com teto
+   de --wide, o que numa tela maior que --wide os deixava com --wide
+   inteiro de conteúdo contra --wide menos as duas margens do bento:
+   ~1760 contra ~1360, os 1,25× de diferença que apareciam. */
+.measure{
+  width:min(100% - var(--pad) * 2,var(--wide) - var(--pad) * 2);
+  max-width:none;
+  margin-inline:auto;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  /* âncora do .bg, que é absoluto e precisa medir a partir do topo
+     do documento */
+  position:relative;
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+
+img,svg{display:block;max-width:100%}
+
+/* ───────────────────────────────────────────────────────────────────
+   Fundo — a arte da identidade, inteira
+   `fixed` em vez de `background-attachment:fixed`: o navegador compõe
+   uma camada só e o scroll continua liso no celular.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* A arte vive no topo do documento e rola junto com ele: sobe com a
+   abertura e sai de cena. Não é um fundo fixo — se fosse, ela ficaria
+   parada atrás da proposta inteira até o rodapé. */
+.bg{
+  position:absolute;
+  top:0;left:0;right:0;
+  /* A altura acompanha a LARGURA, não a janela — em vh o enquadramento
+     mudava sozinho de monitor para monitor. A arte é 2,37:1, então
+     42vw é praticamente a altura natural dela: numa tela deitada ela
+     aparece inteira, de ponta a ponta, sem corte lateral. O teto evita
+     que num monitor muito largo ela passe da primeira dobra. */
+  height:min(42vw,1150px);
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+/* A arte fica no lugar: o que vive nela é a luz. A composição só
+   respira (escala quase imperceptível) enquanto a cor ganha e perde
+   saturação e desliza alguns graus de matiz — numa arte iridescente é
+   isso que faz o roxo e o laranja parecerem acesos por dentro. */
+.bg__img{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  transform:scale(1.04);
+  animation:artBreathe 15s ease-in-out infinite;
+  will-change:transform,filter;
+  /* Com a caixa na proporção da arte não sobra excesso para posicionar:
+     o enquadramento volta ao centro. */
+  object-position:50% 50%;
+}
+
+/* A arte nova já nasce quase toda preta, então o topo pede só um
+   assentamento leve. O gradiente de baixo é o que importa agora: é ele
+   que dissolve a arte no preto da página, para ela terminar em vez de
+   ser cortada numa linha reta. */
+.bg__vignette{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.10) 16%,transparent 32%),
+    linear-gradient(0deg,#000 0%,rgba(0,0,0,.55) 14%,transparent 38%);
+}
+
+/* Grão fino: tira o banding do gradiente sem custar composição */
+/* O canvas ocupa o mesmo lugar da imagem e entra por cima dela. A
+   troca é cruzada: assim não há um quadro sequer de tela vazia entre
+   a imagem sair e o shader começar a desenhar. */
+.bg__canvas{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  opacity:0;
+  transition:opacity 1.1s var(--ease-soft);
+}
+.bg.is-gl .bg__canvas{opacity:1}
+.bg.is-gl .bg__img{opacity:0;transition:opacity 1.1s var(--ease-soft)}
+
+/* Com o shader no ar quem ondula é ele: a respiração CSS sairia de
+   sincronia com a onda do canvas e brigaria com ela. */
+.bg.is-gl .bg__img{animation:none}
+
+/* O orbe se mede pela ALTURA da caixa, não pela largura: com a arte
+   agora achatada em 2,37:1, uma medida em % da largura o deixaria
+   maior que a própria faixa. */
+.bg__glow{
+  position:absolute;
+  left:50%;top:50%;
+  height:150%;
+  aspect-ratio:1;
+  translate:-50% -50%;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(176,53,126,.34) 0%,
+    rgba(127,36,237,.16) 44%,
+    rgba(127,36,237,0) 70%);
+  filter:blur(46px);
+  mix-blend-mode:screen;
+  animation:glowDrift 21s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.bg__grain{
+  position:absolute;inset:-20%;
+  opacity:.045;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 7s steps(6) infinite;
+}
+
+@keyframes artBreathe{
+  0%,100%{
+    transform:scale(1.04);
+    filter:saturate(1) brightness(1) hue-rotate(0deg);
+  }
+  50%{
+    transform:scale(1.065);
+    filter:saturate(1.22) brightness(1.1) hue-rotate(-9deg);
+  }
+}
+
+/* A luz que percorre a arte por baixo. É o que dá o movimento sem
+   deslocar a composição: um orbe difuso em `screen`, que só acende o
+   que já existe na imagem em vez de desenhar algo por cima. */
+@keyframes glowDrift{
+  0%,100%{transform:translate(-16%,-4%) scale(1);   opacity:.52}
+  28%    {transform:translate(10%,6%)   scale(1.18);opacity:.80}
+  58%    {transform:translate(16%,-8%)  scale(.92); opacity:.44}
+  80%    {transform:translate(-6%,2%)   scale(1.1); opacity:.68}
+}
+
+@keyframes grain{
+  0%,100%{transform:translate3d(0,0,0)}
+  20%{transform:translate3d(-2%,1.5%,0)}
+  40%{transform:translate3d(1.5%,-2%,0)}
+  60%{transform:translate3d(-1.5%,-1.5%,0)}
+  80%{transform:translate3d(2%,1%,0)}
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Roda-teto
+   ─────────────────────────────────────────────────────────────────── */
+
+.topbar{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  width:100%;
+  max-width:var(--wide);
+  margin-inline:auto;
+  padding:clamp(16px,2.4vh,26px) var(--pad);
+  opacity:0;
+  animation:rise .9s var(--ease) .05s forwards;
+}
+
+.topbar__logo{width:clamp(126px,11vw,170px);height:auto}
+
+.topbar__tag{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin:0;
+  padding:7px 14px;
+  border-radius:999px;
+  background:rgba(6,5,10,.34);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(3px) saturate(150%);
+          backdrop-filter:blur(3px) saturate(150%);
+  font-size:11.5px;
+  font-weight:400;
+  letter-spacing:var(--ls-micro);
+  text-transform:uppercase;
+  color:rgba(255,255,255,.70);
+  white-space:nowrap;
+}
+
+.topbar__dot{
+  width:6px;height:6px;
+  flex:none;
+  border-radius:50%;
+  background:var(--brand-3);
+  animation:ping 2.6s var(--ease-soft) infinite;
+}
+
+@keyframes ping{
+  0%,100%{box-shadow:0 0 0 0 rgba(228,48,48,.45)}
+  55%{box-shadow:0 0 0 6px rgba(228,48,48,0)}
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Abertura
+   --t governa a escala do bloco inteiro, exatamente como na home.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Sem min-height: a hero vale o tamanho do que tem dentro. Qualquer
+   altura reservada aqui vira vão morto entre o roda-teto, o título e a
+   primeira seção — a arte do fundo já ocupa a tela sozinha. */
+.hero{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  padding-top:clamp(18px,3vh,42px);
+  padding-bottom:clamp(26px,4vh,56px);
+}
+
+.hero__inner{
+  --t:clamp(2.5rem,6.6vw,7.2rem);
+
+  width:100%;
+  max-width:var(--wide);
+  margin-inline:auto;
+  padding-inline:var(--pad);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:clamp(24px,4vw,64px);
+  flex-wrap:wrap;
+}
+
+.hero__title{
+  margin:0;
+  font-size:var(--t);
+  font-weight:300;
+  line-height:.92;
+  letter-spacing:-.03em;
+  display:flex;
+  flex-direction:column;
+  cursor:default;
+}
+
+.ln{display:block;opacity:0;animation:rise 1s var(--ease) forwards}
+.ln:nth-child(1){animation-delay:.20s}
+.ln:nth-child(2){animation-delay:.31s}
+
+/* "web" em cinza, acendendo em gradiente no hover — mesmo gesto do
+   título da home, aqui só na palavra final. */
+.ln__accent{position:relative;display:inline-block}
+.ln__base{color:var(--ink-muted);transition:color .5s var(--ease-soft)}
+.ln__fill{
+  position:absolute;
+  inset:0;
+  white-space:nowrap;
+  background:var(--brand-gradient);
+  -webkit-background-clip:text;
+          background-clip:text;
+  color:transparent;
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path .68s var(--ease);
+  pointer-events:none;
+}
+@media (hover:hover){
+  .hero__title:hover .ln__fill{clip-path:inset(0 0 0 0)}
+  .hero__title:hover .ln__base{color:#6a6a6a}
+}
+
+/* ── Pílula do cliente ───────────────────────────────────────────────
+   A pílula de vidro da home, aqui como rótulo: identifica de quem é a
+   proposta. Não é link e não tem estado de hover de ação.
+   ─────────────────────────────────────────────────────────────────── */
+
+.client{
+  --h:clamp(52px,5.6vw,68px);
+
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:calc(var(--h) * .21);
+  margin:0 0 calc(var(--t) * .06);
+  padding:calc(var(--h) * .145) calc(var(--h) * .34) calc(var(--h) * .145) calc(var(--h) * .16);
+  border-radius:calc(var(--h) * .32);
+  overflow:hidden;
+  isolation:isolate;
+  opacity:0;
+  animation:rise 1s var(--ease) .52s forwards;
+
+  /* ── Liquid Glass ──────────────────────────────────────────────
+     Receita do botão da home: o corpo quase não desfoca, a arte
+     atravessa nítida, só mais densa e saturada. Quem dá a leitura de
+     vidro é o aro (.client__rim), não o embaçado. */
+  background-color:rgba(6,5,10,.34);
+  background-image:
+    linear-gradient(158deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.012) 38%,rgba(255,255,255,0) 62%);
+  -webkit-backdrop-filter:blur(2px) saturate(150%);
+          backdrop-filter:blur(2px) saturate(150%);
+  box-shadow:0 10px 26px -14px rgba(0,0,0,.70);
+}
+
+/* O aro refrata: desfoca de leve, satura forte e clareia — a luz
+   dobrando na quina. 1px e alfa ~.18, as medidas da referência. */
+.client__rim{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(145deg,
+    rgba(255,255,255,.24) 0%,
+    rgba(255,255,255,.10) 34%,
+    rgba(255,255,255,.08) 62%,
+    rgba(255,255,255,.17) 100%);
+  -webkit-backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
+          backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* Selo da marca — o mesmo bloco de gradiente do chip do botão, agora
+   com o ícone de cliente dentro. O gradiente é desenhado no dobro da
+   largura para poder deslizar: é isso que dá o movimento de fundo sem
+   recalcular nada a cada quadro. */
+.client__chip{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:calc(var(--h) * .725);
+  height:calc(var(--h) * .60);
+  border-radius:calc(var(--h) * .175);
+  color:#fff;
+  background:var(--cta-gradient);
+  background-size:220% 100%;
+  animation:chipFlow 6s var(--ease-soft) infinite;
+}
+.client__chip svg{width:58%;height:58%;overflow:visible}
+
+/* A cabeça aparece primeiro, o arco se desenha em seguida, os dois
+   somem juntos e o ciclo recomeça. */
+.client__head{
+  transform-box:fill-box;
+  transform-origin:50% 50%;
+  animation:headPop 4.2s var(--ease) infinite;
+}
+.client__body{
+  stroke-dasharray:18;
+  animation:drawBody 4.2s var(--ease) infinite;
+}
+
+@keyframes chipFlow{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+@keyframes headPop{
+  0%{opacity:0;transform:scale(.35)}
+  14%{opacity:1;transform:scale(1)}
+  76%{opacity:1;transform:scale(1)}
+  90%{opacity:0;transform:scale(1.08)}
+  100%{opacity:0;transform:scale(.35)}
+}
+@keyframes drawBody{
+  0%{stroke-dashoffset:18;opacity:1}
+  18%{stroke-dashoffset:18}
+  44%{stroke-dashoffset:0}
+  76%{stroke-dashoffset:0;opacity:1}
+  90%{stroke-dashoffset:0;opacity:0}
+  100%{stroke-dashoffset:18;opacity:0}
+}
+
+.client__name{
+  font-size:clamp(.95rem,1.15vw,1.1rem);
+  font-weight:400;
+  letter-spacing:.002em;
+  color:#fff;
+  white-space:nowrap;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Seções
+   Cada bloco da proposta é uma seção com cabeçalho próprio: numeração,
+   título e subtítulo centrados, e as peças logo abaixo.
+   ─────────────────────────────────────────────────────────────────── */
+
+.sec{
+  position:relative;
+  z-index:2;
+  padding-block:clamp(30px,4vh,58px);
+}
+
+/* Filete tracejado separando uma seção da anterior */
+.sec + .sec::before{
+  content:"";
+  position:absolute;
+  left:var(--pad);right:var(--pad);
+  top:0;
+  height:1px;
+  background:repeating-linear-gradient(90deg,
+    rgba(255,255,255,.20) 0 3px,transparent 3px 9px);
+}
+
+/* Marcadores de quina: quatro cruzes finas que delimitam a área útil
+   da seção. É o acabamento de "planta técnica" — não desenham caixa,
+   só marcam onde ela estaria. */
+.marks{position:absolute;inset:clamp(14px,2vh,26px) var(--pad);pointer-events:none}
+.marks i{position:absolute;width:9px;height:9px;opacity:.55}
+.marks i::before,
+.marks i::after{content:"";position:absolute;background:rgba(255,255,255,.34)}
+.marks i::before{left:50%;top:0;width:1px;height:100%;transform:translateX(-50%)}
+.marks i::after{top:50%;left:0;height:1px;width:100%;transform:translateY(-50%)}
+.marks i:nth-child(1){left:-4.5px;top:-4.5px}
+.marks i:nth-child(2){right:-4.5px;top:-4.5px}
+.marks i:nth-child(3){left:-4.5px;bottom:-4.5px}
+.marks i:nth-child(4){right:-4.5px;bottom:-4.5px}
+
+/* Alinhado à esquerda, na mesma coluna do título da abertura e das
+   peças — a página inteira corre por um eixo só. */
+.sec__head{
+  position:relative;
+  width:100%;
+  max-width:var(--wide);
+  margin:0 auto clamp(20px,2.4vw,34px);
+  padding-inline:var(--pad);
+  text-align:left;
+}
+
+/* Assento difuso atrás do cabeçalho: não desenha caixa nenhuma, só
+   rebaixa a arte no ponto exato onde o texto está. Sem ele, a faixa
+   clara passa por trás do título e come o contraste. O foco acompanha
+   o texto, por isso fica à esquerda e não no meio. */
+.sec__head::before{
+  content:"";
+  position:absolute;
+  left:0;top:50%;
+  width:min(116%,1080px);
+  height:230%;
+  transform:translateY(-50%);
+  background:radial-gradient(54% 50% at 26% 50%,
+    rgba(0,0,0,.58) 0%,rgba(0,0,0,.32) 46%,rgba(0,0,0,0) 76%);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* Numeração da seção, com os três pontos da referência: os dois
+   primeiros apagados, o terceiro aceso no gradiente da marca. */
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 var(--mb-micro);
+  font-size:var(--fs-micro);
+  font-weight:400;
+  letter-spacing:var(--ls-micro);
+  color:rgba(255,255,255,.52);
+}
+.eyebrow__dots{display:inline-flex;align-items:center;gap:3px}
+.eyebrow__dots i{
+  width:4px;height:4px;
+  border-radius:50%;
+  background:rgba(255,255,255,.22);
+}
+.eyebrow__dots i:nth-child(2){background:rgba(255,255,255,.38)}
+.eyebrow__dots i:last-child{background:var(--brand-gradient)}
+.eyebrow--on{color:rgba(255,255,255,.75)}
+.eyebrow--on .eyebrow__dots i{background:rgba(255,255,255,.4)}
+.eyebrow--on .eyebrow__dots i:last-child{background:#fff}
+
+/* Os cabeçalhos são o único texto da página fora de uma peça de vidro,
+   então caem direto sobre a arte. A sombra abaixo é o que os sustenta
+   quando a faixa clara passa por trás. */
+.sec__title{
+  margin:0;
+  font-size:var(--fs-title);
+  font-weight:300;
+  line-height:.98;
+  letter-spacing:-.032em;
+  cursor:default;
+  text-shadow:0 2px 16px rgba(0,0,0,.8),0 1px 4px rgba(0,0,0,.6);
+}
+.eyebrow{text-shadow:0 1px 5px rgba(0,0,0,.75)}
+.sec__title .ln{display:block;opacity:1;animation:none}
+
+.sec__sub{
+  max-width:56ch;
+  margin:clamp(11px,1.3vw,16px) 0 0;
+  font-size:var(--fs-lead);
+  font-weight:300;
+  line-height:var(--lh-lead);
+  color:rgba(255,255,255,.86);
+  text-shadow:0 1px 10px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.7);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Bento
+   6 colunas no desktop. Cada peça declara seu próprio span, então a
+   grade se reorganiza sozinha quando o número de colunas cai.
+   ─────────────────────────────────────────────────────────────────── */
+
+.bento{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:var(--gap);
+  width:100%;
+  max-width:var(--wide);
+  margin-inline:auto;
+  padding-inline:var(--pad);
+}
+
+/* Uma grade só para a página inteira: as duas seções dividem em 4+8,
+   então a linha interna cai no mesmo x nas duas e os blocos se alinham
+   de cima a baixo. Antes a seção 01 dividia em 2+4 e a 02 em 3+3, e
+   nada batia entre elas. */
+/* O `gap` só separa peças DENTRO de uma grade. Entre duas grades
+   seguidas não havia nada, e as linhas encostavam. */
+.bento + .bento{margin-top:var(--gap)}
+
+.tile--structure{grid-column:span 4}
+.tile--included {grid-column:span 8}
+.tile--pay      {grid-column:span 4}
+.tile--pay-split{grid-column:span 8}
+.tile--excluded {grid-column:span 4}
+.tile--domain   {grid-column:span 8}
+
+/* ── A peça de vidro ─────────────────────────────────────────────────
+   Mesma receita do botão da home: densidade baixa, blur mínimo,
+   saturação alta. A arte atravessa a peça — é esse o efeito.
+   A densidade sobe só o necessário para o texto se sustentar sobre as
+   partes claras da arte. */
+.tile{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  padding:var(--pad-block);
+  border-radius:clamp(16px,1.5vw,22px);
+  overflow:hidden;
+  isolation:isolate;
+
+  background-color:rgba(6,5,10,.90);
+  background-image:
+    linear-gradient(158deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.012) 38%,rgba(255,255,255,0) 62%);
+  -webkit-backdrop-filter:blur(3px) saturate(150%);
+          backdrop-filter:blur(3px) saturate(150%);
+  box-shadow:0 14px 34px -18px rgba(0,0,0,.72);
+  transition:background-color .45s var(--ease-soft),
+             box-shadow .45s var(--ease-soft),
+             transform .5s var(--ease);
+}
+
+/* O aro é a peça principal do vidro — idêntico ao do botão. */
+.tile__rim{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(145deg,
+    rgba(255,255,255,.24) 0%,
+    rgba(255,255,255,.10) 34%,
+    rgba(255,255,255,.08) 62%,
+    rgba(255,255,255,.17) 100%);
+  -webkit-backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
+          backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
+  z-index:1;
+  transition:background .5s var(--ease-soft);
+}
+
+/* No hover o vidro afina: a arte aparece mais e o aro ganha a cor da
+   marca — o mesmo movimento do botão, que também clareia ao passar. */
+@media (hover:hover){
+  /* Com o bloco escuro, o hover só entreabre: o salto para .30 que
+     existia antes clarearia a peça inteira de uma vez. */
+  .tile:hover{
+    background-color:rgba(6,5,10,.80);
+    box-shadow:0 20px 44px -18px rgba(0,0,0,.8);
+    transform:translateY(-2px);
+  }
+  .tile:hover .tile__rim{
+    background:linear-gradient(145deg,
+      rgba(142,52,158,.80) 0%,
+      rgba(185,58,83,.55) 52%,
+      rgba(228,48,48,.72) 100%);
+  }
+}
+
+/* O vidro é fino de propósito, então em certos pontos do scroll a
+   parte clara da arte passa atrás do texto. A sombra abaixo é o que
+   segura o contraste aí — mais barato que engrossar o vidro e perder
+   o efeito. */
+.tile p,
+.tile li{text-shadow:0 1px 3px rgba(0,0,0,.55)}
+
+/* O rótulo fica logo acima do que ele nomeia. Antes ele empurrava o
+   conteúdo para o fim da peça (margin-bottom:auto) para alinhar as
+   bases — o que abria vãos grandes nas peças de pouco texto. */
+.tile__label{
+  margin:0 0 var(--mb-micro);
+  font-size:var(--fs-micro);
+  font-weight:400;
+  letter-spacing:var(--ls-micro);
+  text-transform:uppercase;
+  color:rgba(255,255,255,.62);
+}
+
+.tile__text{
+  margin:0;
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:rgba(255,255,255,.88);
+}
+
+.tile__note{
+  margin:10px 0 0;
+  font-size:var(--fs-small);
+  line-height:var(--lh-body);
+  color:rgba(255,255,255,.64);
+}
+
+/* ── Estrutura ───────────────────────────────────────────────────── */
+
+.tile__big{
+  margin:0;
+  font-size:var(--fs-stat);
+  font-weight:300;
+  line-height:1;
+  letter-spacing:-.035em;
+  color:#fff;
+}
+/* O qualificador corre na mesma linha do número ("3 a 4 dobras"), em
+   corpo menor e apagado. Era um bloco, e quebrava a expressão em duas
+   linhas. */
+.tile__big .qual{
+  font-size:.44em;
+  letter-spacing:-.01em;
+  color:rgba(255,255,255,.62);
+}
+
+/* Algarismos de largura fixa: sem isso o número muda de largura a cada
+   quadro da contagem e a linha inteira treme. */
+.num{
+  display:inline-block;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+}
+
+/* ── Investimento ────────────────────────────────────────────────────
+   A única peça fora da grade e a única com aro em gradiente cheio: é o
+   equivalente ao plano marcado numa tabela de preços. Tudo o mais na
+   página usa o aro branco translúcido. */
+
+/* Sem o corpo grande, todo o destaque do valor passa a vir daqui: a
+   peça é a mais clara da página e a única com aro em gradiente cheio. */
+.tile--price{
+  align-items:flex-start;
+  justify-content:center;
+  margin-bottom:var(--gap);
+  padding-block:calc(var(--pad-block) * 1.5);
+  background-color:rgba(18,10,26,.80);
+}
+
+
+.tile--price .tile__rim{
+  background:linear-gradient(120deg,
+    rgba(127,36,237,.85) 0%,
+    rgba(176,53,126,.60) 50%,
+    rgba(243,45,34,.80) 100%);
+  -webkit-backdrop-filter:none;
+          backdrop-filter:none;
+}
+@media (hover:hover){
+  .tile--price:hover .tile__rim{
+    background:linear-gradient(120deg,
+      rgba(127,36,237,1) 0%,
+      rgba(176,53,126,.80) 50%,
+      rgba(243,45,34,1) 100%);
+  }
+}
+
+/* Halo da marca sangrando pelo canto: o valor é o que o olho precisa
+   encontrar primeiro nesta página. */
+.tile__glow{
+  position:absolute;
+  right:-18%;top:-70%;
+  width:58%;height:200%;
+  border-radius:50%;
+  background:var(--cta-gradient);
+  filter:blur(68px);
+  opacity:.26;
+  z-index:-1;
+  pointer-events:none;
+  transition:opacity .6s var(--ease-soft);
+}
+.tile__glow--wide{right:auto;left:-10%;width:46%;opacity:.20}
+
+@media (hover:hover){
+  .tile--price:hover .tile__glow{opacity:.38}
+}
+
+.price{
+  display:flex;
+  align-items:baseline;
+  gap:.16em;
+  margin:0;
+  line-height:.9;
+  letter-spacing:-.045em;
+  /* Mesmo corpo do "3 a 4": os dois números da proposta ficam no mesmo
+     degrau. O que separa este é o contraste — branco puro contra o
+     cinza dos demais, e o aro em gradiente da peça. */
+  font-size:var(--fs-stat);
+  color:#fff;
+  text-shadow:0 2px 14px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.65);
+}
+.price__cur{font-size:.46em;font-weight:400;letter-spacing:-.01em}
+.price__num{font-size:1em;font-weight:300}
+
+/* ── Listas ──────────────────────────────────────────────────────── */
+
+.list{
+  margin:0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+}
+
+.list li{
+  position:relative;
+  padding:8px 0 8px clamp(21px,1.6vw,26px);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:rgba(255,255,255,.88);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.075);
+}
+.list li:last-child{box-shadow:none;padding-bottom:0}
+
+/* A peça dos inclusos é larga: em duas colunas a lista não vira uma
+   tira comprida de oito linhas soltas. */
+.tile--included .list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  column-gap:clamp(20px,2.4vw,40px);
+}
+.tile--included .list li:nth-last-child(-n+2){box-shadow:none;padding-bottom:0}
+
+/* Marcador em gradiente para o que entra… */
+.list--in li::before{
+  content:"";
+  position:absolute;
+  left:0;top:1.02em;
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--brand-gradient);
+}
+
+/* …e um traço apagado para o que fica de fora. */
+.list--out li{color:rgba(255,255,255,.70)}
+.list--out li::before{
+  content:"";
+  position:absolute;
+  left:0;top:1.3em;
+  width:9px;height:1px;
+  background:rgba(255,255,255,.34);
+}
+
+/* ── Próximo passo ───────────────────────────────────────────────────
+   Faixa de cor cheia: o único bloco da página que não é vidro. Corta o
+   ritmo das peças translúcidas e fecha a leitura. */
+
+.sec--next{padding-bottom:clamp(20px,3vh,40px)}
+
+.band{
+  position:relative;
+  padding:var(--pad-block-lg) var(--pad-block);
+  border-radius:clamp(16px,1.5vw,24px);
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(120% 180% at 2% 0%,rgba(127,36,237,.92) 0%,rgba(127,36,237,0) 58%),
+    radial-gradient(110% 170% at 100% 100%,rgba(243,45,34,.80) 0%,rgba(243,45,34,0) 56%),
+    linear-gradient(104deg,#6B1FC9 0%,#A32F74 52%,#D42A22 100%);
+  box-shadow:0 26px 60px -30px rgba(0,0,0,.9);
+}
+
+.band__rim{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(145deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.08) 55%,rgba(255,255,255,.26) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
+}
+
+.band__title{
+  margin:0;
+  font-size:var(--fs-title);
+  font-weight:300;
+  line-height:1;
+  letter-spacing:-.032em;
+  color:#fff;
+}
+
+.band__text{
+  max-width:48ch;
+  margin:clamp(14px,1.8vw,22px) 0 0;
+  font-size:var(--fs-lead);
+  font-weight:300;
+  line-height:var(--lh-lead);
+  letter-spacing:-.012em;
+  color:rgba(255,255,255,.92);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Assinatura
+   ─────────────────────────────────────────────────────────────────── */
+
+.foot{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:var(--wide);
+  margin-inline:auto;
+  padding:clamp(34px,6vh,64px) var(--pad) clamp(34px,6vh,60px);
+}
+
+.foot__sign{
+  display:inline-flex;
+  align-items:baseline;
+  gap:.4em;
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:var(--ls-micro);
+  text-transform:uppercase;
+  color:rgba(255,255,255,.52);
+  text-decoration:none;
+  text-shadow:0 1px 6px rgba(0,0,0,.6);
+  transition:color .4s var(--ease-soft);
+}
+.foot__sign strong{font-weight:500}
+.foot__sign span{letter-spacing:.1em;text-transform:none;font-size:11.5px}
+.foot__sign:hover{color:#fff}
+.foot__sign:focus-visible{
+  outline:none;
+  color:#fff;
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Entradas
+   .reveal entra quando cruza a dobra; o JS só troca a classe.
+   O estado inicial só é aplicado depois que o script confirma que o
+   IntersectionObserver existe (body.has-reveal) — sem JS o conteúdo
+   nasce visível em vez de ficar preso na animação.
+   ─────────────────────────────────────────────────────────────────── */
+
+@keyframes rise{
+  from{opacity:0;transform:translate3d(0,24px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+body.has-reveal .reveal{
+  opacity:0;
+  transform:translate3d(0,26px,0);
+  transition:opacity .8s var(--ease-soft) var(--d,0s),
+             transform .9s var(--ease) var(--d,0s);
+}
+body.has-reveal .reveal.is-in{opacity:1;transform:translate3d(0,0,0)}
+
+/* ───────────────────────────────────────────────────────────────────
+   Responsivo
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Tablet: abaixo desta largura o bloco de 4 colunas fica estreito demais
+   para o texto que carrega, então todos passam a ocupar a linha inteira
+   — e seguem uniformes entre si, que é o ponto. */
+@media (max-width:1040px){
+  .tile--structure,
+  .tile--included,
+  .tile--pay,
+  .tile--pay-split,
+  .tile--excluded,
+  .tile--domain{grid-column:1 / -1}
+}
+
+/* Retrato: mesma escala de tipo e recuos da home nesse formato. */
+@media (max-aspect-ratio: 0.9999/1){
+  .hero{align-items:flex-start;min-height:0;padding-top:clamp(26px,6vh,70px)}
+  .hero__inner{
+    --t:clamp(2.1rem,10.2vw,5rem);
+    align-items:flex-start;
+    flex-direction:column;
+    gap:clamp(26px,5vh,46px);
+  }
+  .client{
+    --h:clamp(42px,11.5vw,54px);
+    gap:calc(var(--h) * .266);
+    padding:calc(var(--h) * .156) calc(var(--h) * .28)
+            calc(var(--h) * .156) calc(var(--h) * .1875);
+    border-radius:calc(var(--h) * .30);
+    margin:0;
+  }
+  .client__chip{
+    width:calc(var(--h) * .8125);
+    height:calc(var(--h) * .6875);
+    border-radius:calc(var(--h) * .22);
+  }
+  /* O nome não acompanha --h: na largura de um celular ele estouraria
+     o recuo lateral. Fica na mesma faixa do desktop. */
+  .client__name{font-size:clamp(.82rem,3.4vw,.95rem);white-space:normal}
+}
+
+/* Celular: coluna única, na ordem de leitura da proposta. */
+@media (max-width:720px){
+  .bento{grid-template-columns:1fr}
+  .tile--structure,
+  .tile--included,
+  .tile--pay,
+  .tile--pay-split,
+  .tile--excluded,
+  .tile--domain{grid-column:1 / -1}
+
+  /* Oito itens em duas colunas estreitas quebram palavra a palavra */
+  .tile--included .list{grid-template-columns:1fr}
+  .tile--included .list li:nth-last-child(2){
+    box-shadow:inset 0 -1px 0 rgba(255,255,255,.075);
+    padding-bottom:8px;
+  }
+
+  /* As cruzes de quina encostariam no texto na largura de um celular */
+  .marks{display:none}
+
+  .topbar{gap:14px}
+  .topbar__tag{padding:6px 11px;font-size:10.5px;letter-spacing:.11em}
+
+  .ln__fill{white-space:normal}
+
+  /* Numa tela em pé não há proporção boa para uma arte 2,37:1: na
+     altura natural ela viraria uma tira fina atrás do título. Ganha
+     altura e perde as laterais — por isso o essencial da composição
+     mora no miolo. */
+  .bg{height:clamp(190px,62vw,430px)}
+  .bg__img{object-position:50% 50%}
+
+  .bg__vignette{
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.50) 0%,rgba(0,0,0,.14) 18%,transparent 36%),
+      linear-gradient(0deg,#000 0%,rgba(0,0,0,.55) 12%,transparent 34%);
+  }
+}
+
+@media (max-width:420px){
+  .topbar{flex-direction:column;align-items:flex-start}
+
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Sem suporte a backdrop-filter
+   Sem o desfoque, a densidade precisa subir — senão a arte atravessa
+   o texto. Firefox antigo e WebView velha caem aqui.
+   ─────────────────────────────────────────────────────────────────── */
+
+@supports not ((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){
+  .tile{background-color:rgba(6,5,10,.94)}
+  .client,.topbar__tag{background-color:rgba(6,5,10,.78)}
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Menos movimento
+   ─────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+  body.has-reveal .reveal{opacity:1;transform:none}
+  .bg__grain{animation:none}
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Impressão — a proposta costuma virar PDF
+   ─────────────────────────────────────────────────────────────────── */
+
+@media print{
+  .bg{display:none}
+  body{background:#fff;color:#111}
+  .tile{
+    background:#fff;
+    border:1px solid #ddd;
+    box-shadow:none;
+    -webkit-backdrop-filter:none;
+            backdrop-filter:none;
+    break-inside:avoid;
+  }
+  .tile__rim,.tile__glow,.client__rim,.band__rim,.marks{display:none}
+  .client{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .client__name{color:#111;text-shadow:none}
+  .tile__label,.tile__note{color:#666}
+  .tile__text,.list li,.sec__sub{color:#222;text-shadow:none}
+  .list--out li{color:#555}
+  .sec{padding-block:26px}
+  .sec + .sec::before{background:none;border-top:1px solid #ddd}
+  .eyebrow{color:#888}
+  .eyebrow__dots i,.eyebrow--on .eyebrow__dots i{background:#bbb}
+  .eyebrow__dots i:last-child{background:#888}
+  .sec__title,.band__title{color:#111}
+  /* A faixa colorida gastaria metade de um cartucho */
+  .band{background:#fff;border:1px solid #ddd;box-shadow:none;break-inside:avoid}
+  .band__text{color:#222}
+  .eyebrow--on{color:#888}
+  .price{color:#111;text-shadow:none}
+  .ln__base{color:#555}
+  .ln__fill{display:none}
+  .foot__sign{color:#666;text-shadow:none}
+  body.has-reveal .reveal{opacity:1;transform:none}
+}
