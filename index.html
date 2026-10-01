@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>UNREALESE — Solicite seu orçamento</title>
+<meta name="description" content="UNREALESE — Criação de sites profissionais. Solicite seu orçamento conosco.">
+
+<link rel="icon" href="assets/img/unrealese-logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="assets/img/hero-bg-1920.jpg"
+      imagesrcset="assets/img/hero-bg-960.jpg 960w, assets/img/hero-bg-1280.jpg 1280w,
+                   assets/img/hero-bg-1920.jpg 1920w, assets/img/hero-bg-2560.jpg 2560w"
+      imagesizes="100vw" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/img/hero-bg-p810.jpg"
+      imagesrcset="assets/img/hero-bg-p640.jpg 640w, assets/img/hero-bg-p810.jpg 810w,
+                   assets/img/hero-bg-p1080.jpg 1080w"
+      imagesizes="100vw" media="(max-aspect-ratio: 0.9999/1)" fetchpriority="high">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="is-intro">
+
+<!-- ═══ Abertura ════════════════════════════════════════════════════
+     Cortina preta com a marca se montando. Enquanto ela está no ar as
+     animações de entrada da hero ficam pausadas (body.is-intro), para
+     que o site "abra" de verdade em vez de já estar montado por trás.
+     ════════════════════════════════════════════════════════════════ -->
+<div class="intro" id="intro">
+  <!-- As duas peças são o MESMO arquivo do logo, recortado por clip-path:
+       o símbolo e a tipografia animam separados sem custar bytes a mais. -->
+  <div class="intro__logo">
+    <span class="intro__glow" aria-hidden="true"></span>
+    <img class="intro__part intro__mark" src="assets/img/unrealese-logo.png" alt="" width="720" height="148" fetchpriority="high">
+    <img class="intro__part intro__word" src="assets/img/unrealese-logo.png" alt="" width="720" height="148" fetchpriority="high">
+  </div>
+</div>
+<noscript><style>.intro{display:none!important}</style></noscript>
+
+<!-- ═══ Roda-teto ═══════════════════════════════════════════════════
+     ATENÇÃO: os contatos abaixo são PROVISÓRIOS. Troque o e-mail, o
+     número do WhatsApp e o @ do Instagram pelos reais antes de publicar.
+     ════════════════════════════════════════════════════════════════ -->
+<header class="topbar" id="topbar">
+  <p class="topbar__status">
+    <span class="topbar__dot" aria-hidden="true"></span>
+    Disponível para novos projetos
+  </p>
+
+  <nav class="topbar__nav" aria-label="Principal">
+    <button class="topbar__link" type="button" id="openProjects" aria-haspopup="dialog">
+      Projetos
+      <span class="topbar__count">3</span>
+    </button>
+
+
+    <a class="topbar__icon" href="https://wa.me/5562991621780" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3.4 16.6l.94-3.4a6.3 6.3 0 1 1 2.43 2.38L3.4 16.6Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+        <path d="M7.9 7.5c.2-.5.42-.5.6-.5h.5c.16 0 .4 0 .55.4l.48 1.2c.07.17.03.36-.08.5l-.3.36a.32.32 0 0 0-.05.38 4.3 4.3 0 0 0 2.05 1.82c.15.06.32.02.42-.11l.36-.45c.12-.15.31-.2.48-.13l1.24.53c.22.1.34.33.3.56l-.1.5c-.08.4-.42.7-.83.73a5.65 5.65 0 0 1-5.8-5.1c-.02-.4.06-.75.18-1.1Z" fill="currentColor"/>
+      </svg>
+    </a>
+
+    <a class="topbar__icon" href="https://instagram.com/unrealesebr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="3.6" y="3.6" width="12.8" height="12.8" rx="4" stroke="currentColor" stroke-width="1.35"/>
+        <circle cx="10" cy="10" r="3.1" stroke="currentColor" stroke-width="1.35"/>
+        <circle cx="13.9" cy="6.1" r="1" fill="currentColor"/>
+      </svg>
+    </a>
+
+    <!-- Controle de som. Fica oculto até o JS confirmar que há trilha. -->
+    <button class="topbar__icon topbar__sound" type="button" id="soundToggle"
+            aria-pressed="false" aria-label="Ativar som" hidden>
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M4 7.6h2.6L10.4 4.5c.4-.33 1 -.05 1 .47v10.06c0 .52-.6.8-1 .47L6.6 12.4H4a.9.9 0 0 1-.9-.9V8.5A.9.9 0 0 1 4 7.6Z"
+              stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <g class="ico-on">
+          <path d="M13.9 7.6a3.4 3.4 0 0 1 0 4.8M15.9 5.5a6.3 6.3 0 0 1 0 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </g>
+        <g class="ico-off">
+          <path d="M14.2 8.2l3.4 3.6M17.6 8.2l-3.4 3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<main class="hero" id="hero">
+
+  <!-- ── Fundo: arte da identidade UNREALESE ─────────────────────────── -->
+  <div class="hero__bg" aria-hidden="true">
+    <picture>
+      <source media="(max-aspect-ratio: 0.9999/1)"
+              srcset="assets/img/hero-bg-p640.jpg 640w,
+                      assets/img/hero-bg-p810.jpg 810w,
+                      assets/img/hero-bg-p1080.jpg 1080w"
+              sizes="100vw">
+      <img class="hero__bg-img" id="bgImage"
+           src="assets/img/hero-bg-1920.jpg"
+           srcset="assets/img/hero-bg-960.jpg 960w,
+                   assets/img/hero-bg-1280.jpg 1280w,
+                   assets/img/hero-bg-1920.jpg 1920w,
+                   assets/img/hero-bg-2560.jpg 2560w"
+           sizes="100vw"
+           alt="" decoding="async" fetchpriority="high">
+    </picture>
+    <!-- Upgrade progressivo: profundidade, distorção e glow no cursor -->
+    <canvas class="hero__bg-canvas" id="bgCanvas"></canvas>
+    <div class="hero__vignette"></div>
+    <div class="hero__grain"></div>
+  </div>
+
+  <!-- ── Conteúdo ────────────────────────────────────────────────────── -->
+  <div class="hero__inner">
+
+    <img class="hero__logo" src="assets/img/unrealese-logo.png" alt="UNREALESE"
+         width="480" height="98" fetchpriority="high">
+
+    <h1 class="hero__title">
+      <span class="ln">Solicite seu</span>
+      <span class="ln ln--accent">
+        <span class="ln__base">orçamento</span>
+        <span class="ln__fill" aria-hidden="true">orçamento</span>
+      </span>
+      <span class="ln">conosco.</span>
+    </h1>
+
+    <!-- Destino do CTA: troque o href pelo formulário, WhatsApp ou e-mail
+         que receberá os pedidos de orçamento. -->
+    <a class="cta" href="https://wa.me/5562991621780?text=Olá! Gostaria de solicitar um orçamento para um projeto." target="_blank" rel="noopener noreferrer">
+      <!-- Aro refrativo: é a borda que distorce e satura o que está
+           atrás. É daí que vem a leitura de vidro, não do desfoque. -->
+      <span class="cta__rim" aria-hidden="true"></span>
+      <span class="cta__icon" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M16.5 11.2c0 .77-.63 1.4-1.4 1.4H7.3L4.2 15.2c-.3.25-.75.04-.75-.35V5.6c0-.77.63-1.4 1.4-1.4h10.25c.77 0 1.4.63 1.4 1.4v5.6Z"
+                stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+          <path d="M7 7.4h6M7 9.9h3.6" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="cta__label">Fale com nosso time</span>
+    </a>
+
+  </div>
+
+</main>
+
+<!-- ═══ Projetos — camada sobreposta, aberta pelo roda-teto ═══════════
+     As imagens só são baixadas quando o painel abre pela primeira vez.
+     ════════════════════════════════════════════════════════════════ -->
+<div class="sheet" id="projects" role="dialog" aria-modal="true" aria-labelledby="projectsTitle" hidden>
+  <div class="sheet__scrim" data-close></div>
+
+  <div class="sheet__panel" role="document">
+    <header class="sheet__head">
+      <div>
+        <h2 class="sheet__title" id="projectsTitle">Projetos</h2>
+        <p class="sheet__sub">Social media para marcas que precisam vender.</p>
+      </div>
+      <button class="sheet__close" type="button" data-close aria-label="Fechar projetos">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <ul class="grid">
+      <li class="card">
+        <figure class="card__fig">
+          <img class="card__img" alt="Carrossel de lançamento imobiliário"
+               data-src="assets/img/projetos/imobiliario-1000.jpg"
+               data-srcset="assets/img/projetos/imobiliario-640.jpg 640w, assets/img/projetos/imobiliario-1000.jpg 1000w"
+               sizes="(max-width: 700px) 92vw, 30vw" width="1000" height="1000" decoding="async">
+        </figure>
+        <p class="card__tag">Imobiliário</p>
+        <p class="card__name">Carrossel de lançamento</p>
+      </li>
+
+      <li class="card">
+        <figure class="card__fig">
+          <img class="card__img" alt="Campanha de social media para academia"
+               data-src="assets/img/projetos/fitness-1000.jpg"
+               data-srcset="assets/img/projetos/fitness-640.jpg 640w, assets/img/projetos/fitness-1000.jpg 1000w"
+               sizes="(max-width: 700px) 92vw, 30vw" width="1000" height="1000" decoding="async">
+        </figure>
+        <p class="card__tag">Fitness</p>
+        <p class="card__name">Campanha de academia</p>
+      </li>
+
+      <li class="card">
+        <figure class="card__fig">
+          <img class="card__img" alt="Conteúdo editorial para nutrição"
+               data-src="assets/img/projetos/nutricao-1000.jpg"
+               data-srcset="assets/img/projetos/nutricao-640.jpg 640w, assets/img/projetos/nutricao-1000.jpg 1000w"
+               sizes="(max-width: 700px) 92vw, 30vw" width="1000" height="1000" decoding="async">
+        </figure>
+        <p class="card__tag">Nutrição</p>
+        <p class="card__name">Conteúdo editorial</p>
+      </li>
+    </ul>
+
+    <a class="sheet__cta" href="#orcamento" data-close>
+      Quero algo assim para a minha marca
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h9.5M8.6 4.2 12.9 8l-4.3 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<script src="assets/js/boot.js" defer></script>
+<script src="assets/js/hero.js" defer></script>
+<script src="assets/js/projects.js" defer></script>
+</body>
+</html>
