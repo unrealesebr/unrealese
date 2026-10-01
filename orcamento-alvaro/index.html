@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+
+<title>Orçamento Design/web — Verti Gestão de Obras | UNREALESE</title>
+
+<!-- Página privada: proposta comercial para um cliente específico.
+     Fica fora de buscadores e não é linkada em nenhum ponto do site.
+     O acesso é só pela URL direta /orcamento-alvaro/. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="../assets/img/favicon-32.png" sizes="32x32">
+<link rel="icon" href="../assets/img/favicon-512.png" sizes="512x512">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="../assets/img/orcamento-bg-1600.jpg"
+      imagesrcset="../assets/img/orcamento-bg-720.jpg 720w, ../assets/img/orcamento-bg-1080.jpg 1080w,
+                   ../assets/img/orcamento-bg-1600.jpg 1600w, ../assets/img/orcamento-bg-2560.jpg 2560w"
+      imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="proposta.css">
+</head>
+
+<body>
+
+<!-- ═══ Fundo ════════════════════════════════════════════════════════
+     Arte própria da proposta (BG ORCAMENTO), fixa na viewport: a página
+     inteira desliza por cima dela. Como a arte já é retrato 4:5, uma
+     versão só atende retrato e paisagem — o enquadramento muda no CSS,
+     não no arquivo.
+     ════════════════════════════════════════════════════════════════ -->
+<div class="bg" aria-hidden="true">
+  <img class="bg__img"
+       src="../assets/img/orcamento-bg-1600.jpg"
+       srcset="../assets/img/orcamento-bg-720.jpg 720w,
+               ../assets/img/orcamento-bg-1080.jpg 1080w,
+               ../assets/img/orcamento-bg-1600.jpg 1600w,
+               ../assets/img/orcamento-bg-2560.jpg 2560w"
+       sizes="100vw" alt="" decoding="async" fetchpriority="high">
+  <!-- Upgrade progressivo: o canvas só aparece se o WebGL subir, e aí
+       ele assume o lugar da imagem. Sem isso, fica a animação CSS. -->
+  <canvas class="bg__canvas" id="bgCanvas"></canvas>
+  <div class="bg__glow"></div>
+  <div class="bg__vignette"></div>
+  <div class="bg__grain"></div>
+</div>
+
+<!-- ═══ Roda-teto ═══════════════════════════════════════════════════ -->
+<header class="topbar">
+  <img class="topbar__logo" src="../assets/img/unrealese-logo.png" alt="UNREALESE"
+       width="480" height="98" fetchpriority="high">
+  <p class="topbar__tag">
+    <span class="topbar__dot" aria-hidden="true"></span>
+    Proposta de desenvolvimento
+  </p>
+</header>
+
+<main>
+
+  <!-- ── Abertura ─────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__inner">
+
+      <h1 class="hero__title">
+        <span class="ln">Orçamento</span>
+        <span class="ln">Design/<span class="ln__accent">
+          <span class="ln__base">web</span>
+          <span class="ln__fill" aria-hidden="true">web</span>
+        </span></span>
+      </h1>
+
+      <!-- Pílula de vidro da home, aqui como identificação do cliente:
+           é um rótulo, não um botão — por isso não é link nem tem hover
+           de ação. O chip em gradiente fica como selo da marca. -->
+      <p class="client">
+        <span class="client__rim" aria-hidden="true"></span>
+        <span class="client__chip" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none">
+            <circle class="client__head" cx="10" cy="7.3" r="2.85"
+                    stroke="currentColor" stroke-width="1.5"/>
+            <!-- meio arco de raio 5.6 → ~17,6 de comprimento, que é de
+                 onde sai o stroke-dasharray do traço que se desenha -->
+            <path class="client__body" d="M4.4 15.7a5.6 5.6 0 0 1 11.2 0"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="client__name">Cliente: Álvaro / Verti</span>
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ═══ 01 — Escopo ══════════════════════════════════════════════ -->
+  <section class="sec reveal">
+    <span class="marks" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+    <header class="sec__head">
+      <p class="eyebrow">
+        <span class="eyebrow__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        01
+      </p>
+      <!-- Numa linha só, com a última palavra no cinza que acende —
+           mesma construção de "Design/web" na abertura. -->
+      <h2 class="sec__title">
+        <span class="ln">Site <span class="ln__accent">
+          <span class="ln__base">completo</span>
+          <span class="ln__fill" aria-hidden="true">completo</span>
+        </span></span>
+      </h2>
+      <p class="sec__sub">
+        Criação e desenvolvimento de um site institucional enxuto, com foco em
+        apresentar a Verti, seus serviços, diferenciais e projetos.
+      </p>
+    </header>
+
+    <div class="bento">
+
+      <article class="tile tile--structure reveal">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">Estrutura</p>
+        <p class="tile__big"><span class="num" data-to="3">3</span> a <span class="num" data-to="4">4</span> <span class="qual">dobras</span></p>
+        <p class="tile__note">definidas de acordo com os conteúdos e referências enviados pelo cliente.</p>
+      </article>
+
+      <article class="tile tile--included reveal" style="--d:.08s">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">O que está incluso</p>
+        <ul class="list list--in">
+          <li>Design e direção visual</li>
+          <li>Desenvolvimento completo em código</li>
+          <li>Desktop e mobile</li>
+          <li>Animações e interações</li>
+          <li>Implementação dos conteúdos e imagens</li>
+          <li>Geração de imagens com IA quando necessário</li>
+          <li>Créditos de geração de imagens incluídos</li>
+          <li>Publicação do site</li>
+        </ul>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══ 02 — Investimento ════════════════════════════════════════ -->
+  <section class="sec reveal">
+    <span class="marks" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+    <header class="sec__head">
+      <p class="eyebrow">
+        <span class="eyebrow__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        02
+      </p>
+      <!-- Título de uma palavra só: fica em branco. O cinza que acende
+           é o contraste da segunda linha, e aqui não há segunda linha. -->
+      <h2 class="sec__title"><span class="ln">Investimento</span></h2>
+      <p class="sec__sub">Valor total para o desenvolvimento do site.</p>
+    </header>
+
+    <!-- A peça de destaque da página: é o equivalente ao plano marcado
+         numa tabela de preços — a única com aro em gradiente cheio. -->
+    <article class="tile tile--price measure reveal">
+      <span class="tile__rim" aria-hidden="true"></span>
+      <span class="tile__glow" aria-hidden="true"></span>
+      <p class="price">
+        <span class="price__cur">R$</span><span class="price__num num" data-to="2499.90" data-dec="2">2.499,90</span>
+      </p>
+    </article>
+
+    <!-- Formas de pagamento. Seguem a mesma divisão 4+8 das outras
+         linhas: a opção curta na coluna estreita, a de duas parcelas
+         na larga, que é a que carrega mais texto. -->
+    <div class="bento">
+
+      <article class="tile tile--pay reveal" style="--d:.04s">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">Pagamento — à vista</p>
+        <p class="tile__big"><span class="num" data-to="100">100</span>% <span class="qual">adiantado</span></p>
+        <p class="tile__note">R$ 2.499,90 na contratação.</p>
+      </article>
+
+      <article class="tile tile--pay-split reveal" style="--d:.1s">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">Pagamento — em duas partes</p>
+        <p class="tile__big"><span class="num" data-to="50">50</span>% <span class="qual">adiantado</span> + <span class="num" data-to="50">50</span>% <span class="qual">na entrega</span></p>
+        <p class="tile__note">R$ 1.249,95 na contratação e R$ 1.249,95 após a entrega do site.</p>
+      </article>
+
+    </div>
+
+    <div class="bento">
+
+      <article class="tile tile--excluded reveal" style="--d:.08s">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">Não incluso</p>
+        <ul class="list list--out">
+          <li>Hospedagem</li>
+          <li>Compra do domínio</li>
+          <li>Sistemas ou funcionalidades adicionais não previstas no escopo</li>
+        </ul>
+      </article>
+
+      <article class="tile tile--domain reveal" style="--d:.16s">
+        <span class="tile__rim" aria-hidden="true"></span>
+        <p class="tile__label">Domínio e hospedagem</p>
+        <p class="tile__text">
+          O domínio e a hospedagem serão adquiridos pelo cliente. Após a contratação,
+          os acessos necessários deverão ser enviados para configuração e publicação do site.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══ 03 — Próximo passo ═══════════════════════════════════════
+       Faixa de cor cheia: corta o ritmo e fecha a leitura.
+       ════════════════════════════════════════════════════════════ -->
+  <section class="sec sec--next reveal">
+    <div class="band measure">
+      <span class="band__rim" aria-hidden="true"></span>
+      <p class="eyebrow eyebrow--on">
+        <span class="eyebrow__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        03
+      </p>
+      <h2 class="band__title">Próximo passo</h2>
+      <p class="band__text">
+        Após a aprovação, o cliente envia os conteúdos, referências e materiais
+        disponíveis. A partir disso, iniciamos a criação do projeto.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <a class="foot__sign" href="https://wa.me/5562991621780" target="_blank" rel="noopener noreferrer nofollow">
+    <strong>UNREALESE</strong> <span>/ Web design</span>
+  </a>
+</footer>
+
+<script src="fundo.js" defer></script>
+<script src="proposta.js" defer></script>
+</body>
+</html>
