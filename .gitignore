@@ -1,0 +1,4 @@
+# Fontes do Figma e saídas intermediárias: pesam ~109 MB e só servem para
+# regerar os JPGs da hero. O que vai para o site é assets/img/hero-fig-*.
+FIGMA/
+AJUSTES/

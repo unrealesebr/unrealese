@@ -23,7 +23,10 @@
   --ease:cubic-bezier(.22,1,.36,1);
   --ease-soft:cubic-bezier(.4,0,.2,1);
 
-  --mx:0; --my:0;               /* posição do cursor, escrita pelo JS */
+  /* Régua da interface. O roda-teto e o player se penduram nela, e não
+     nas coordenadas do frame: assim nunca saem da tela, por mais que o
+     `cover` do palco corte as laterais da arte. */
+  --rail:clamp(20px,3.4vw,72px);
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -144,7 +147,6 @@ body.is-intro .cta{animation-play-state:paused}
 
 /* ───────────────────────────────────────────────────────────────────
    Roda-teto
-   Discreto por princípio: a hero é a peça, isto é só acesso.
    ─────────────────────────────────────────────────────────────────── */
 
 .topbar{
@@ -156,163 +158,136 @@ body.is-intro .cta{animation-play-state:paused}
   justify-content:space-between;
   gap:24px;
   width:100%;
-  max-width:1760px;
-  margin-inline:auto;
-  padding:clamp(20px,3.2vh,34px) clamp(24px,9vw,200px);
+  /* Sem max-width: o player vai de régua a régua, e o roda-teto tem de
+     cair exatamente nas mesmas verticais. Um teto de 1760px fazia os
+     dois divergirem em tela ultralarga. */
+  padding:clamp(20px,3.2vh,34px) var(--rail);
   opacity:0;
   animation:rise .9s var(--ease) .1s forwards;
 }
 
-.topbar__status{
+/* ── Peças ────────────────────────────────────────────────────────
+   Mesma gramática dos chips da barra de ferramentas que mora dentro
+   da arte: pílula #F8F8F8 a 6%, canto = 25% da altura, Inter 600,
+   cinza apagado que vira branco, e o mesmo levante de 1.5px no hover.
+   As medidas não são copiadas em px — lá os chips têm 20px de altura
+   porque são um mock em miniatura dentro do desenho. O que se repete
+   é a proporção e a cor. */
+
+.topbar__chip{
+  --h:36px;
+
   display:inline-flex;
   align-items:center;
-  gap:9px;
-  margin:0;
-  font-size:12.5px;
-  font-weight:300;
-  letter-spacing:.01em;
-  color:rgba(255,255,255,.60);
+  justify-content:center;
+  gap:7px;
+  height:var(--h);
+  padding-inline:13px;
+  border:0;
+  border-radius:calc(var(--h) * .25);     /* 9.15287 ÷ 36.6115 do original */
+  background:rgba(248,248,248,.06);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:13.5px;
+  font-weight:600;
+  letter-spacing:0;
+  color:#8B8B8B;
+  text-decoration:none;
   white-space:nowrap;
+  cursor:pointer;
+  transition:background .28s var(--ease-soft),
+             color .28s var(--ease-soft),
+             transform .32s var(--ease);
+}
+.topbar__chip svg{width:17px;height:17px;color:#888888;transition:color .28s var(--ease-soft)}
+
+@media (hover:hover){
+  .topbar__chip:hover{
+    background:rgba(255,255,255,.16);
+    color:#fff;
+    transform:translateY(-1.5px);
+  }
+  .topbar__chip:hover svg{color:#fff}
 }
 
+/* Os que são só ícone ficam quadrados, como o primeiro chip da barra */
+.topbar__icon{width:var(--h);padding-inline:0}
+
+/* O glifo do Projetos só entra no retrato, onde a coluna é de ícones */
+.topbar__glyph{display:none}
+
+/* Selo de disponibilidade: o ponto fica parado. A barra de ferramentas
+   não pisca, e nada deve se mexer sozinho por cima da fotografia. */
+.topbar__status{margin:0}
 .topbar__dot{
   width:6px;height:6px;
   flex:none;
   border-radius:50%;
   background:#22C55E;
-  box-shadow:0 0 0 0 rgba(34,197,94,.5);
-  animation:ping 2.6s var(--ease-soft) infinite;
-}
-@keyframes ping{
-  0%,100%{box-shadow:0 0 0 0 rgba(228,48,48,.45)}
-  55%{box-shadow:0 0 0 6px rgba(228,48,48,0)}
 }
 
 .topbar__nav{
   display:flex;
   align-items:center;
-  gap:clamp(14px,1.6vw,26px);
+  gap:8px;
 }
-
-.topbar__link{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:0;
-  border:0;
-  background:none;
-  font:inherit;
-  font-size:13px;
-  font-weight:300;
-  letter-spacing:.01em;
-  color:rgba(255,255,255,.72);
-  text-decoration:none;
-  cursor:pointer;
-  transition:color .35s var(--ease-soft);
-}
-.topbar__link:hover{color:#fff}
-
-/* Sublinhado em gradiente que cresce da esquerda */
-.topbar__link{position:relative}
-.topbar__link::after{
-  content:"";
-  position:absolute;
-  left:0;right:0;bottom:-6px;
-  height:1px;
-  background:var(--brand-gradient);
-  transform:scaleX(0);
-  transform-origin:left;
-  transition:transform .45s var(--ease);
-}
-.topbar__link:hover::after,
-.topbar__link:focus-visible::after{transform:scaleX(1)}
 
 .topbar__count{
   display:grid;
   place-items:center;
-  min-width:17px;height:17px;
-  padding-inline:4px;
+  min-width:18px;height:18px;
+  padding-inline:5px;
   border-radius:999px;
   background:rgba(255,255,255,.10);
   font-size:10.5px;
-  font-weight:400;
+  font-weight:600;
   color:rgba(255,255,255,.72);
-  transition:background .35s var(--ease-soft),color .35s var(--ease-soft);
+  transition:background .28s var(--ease-soft),color .28s var(--ease-soft);
 }
-.topbar__link:hover .topbar__count{background:var(--brand-gradient);color:#fff}
-
-.topbar__icon{
-  display:grid;
-  place-items:center;
-  width:32px;height:32px;
-  border-radius:50%;
-  color:rgba(255,255,255,.62);
-  text-decoration:none;
-  transition:color .35s var(--ease-soft),background .35s var(--ease-soft);
+@media (hover:hover){
+  .topbar__chip:hover .topbar__count{background:var(--brand-gradient);color:#fff}
 }
-.topbar__icon svg{width:18px;height:18px}
-.topbar__icon:hover{color:#fff;background:rgba(255,255,255,.10)}
 
 /* Som: um só ícone troca de estado escondendo metade do desenho */
-.topbar__sound{border:0;background:none;cursor:pointer;padding:0}
 .topbar__sound .ico-on{opacity:0;transition:opacity .3s var(--ease-soft)}
 .topbar__sound .ico-off{opacity:1;transition:opacity .3s var(--ease-soft)}
 .topbar__sound[aria-pressed="true"] .ico-on{opacity:1}
 .topbar__sound[aria-pressed="true"] .ico-off{opacity:0}
-.topbar__sound[aria-pressed="true"]{color:#fff}
+.topbar__sound[aria-pressed="true"]{color:#fff;background:rgba(255,255,255,.16)}
+.topbar__sound[aria-pressed="true"] svg{color:#fff}
 
-/* Chama atenção uma única vez, até o visitante decidir sobre o som */
-.topbar__sound.is-hint::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  box-shadow:0 0 0 0 rgba(228,48,48,.45);
-  animation:ping 2.6s var(--ease-soft) 3;
-  pointer-events:none;
-}
-.topbar__sound{position:relative}
-
-.topbar__link:focus-visible,
-.topbar__icon:focus-visible{
+.topbar__chip:focus-visible{
   outline:2px solid rgba(255,255,255,.85);
-  outline-offset:4px;
-  border-radius:4px;
+  outline-offset:3px;
 }
 
 /* ───────────────────────────────────────────────────────────────────
    Shell
    ─────────────────────────────────────────────────────────────────── */
 
-/* O topo maior que a base empurra o bloco — centrado — um pouco
-   para baixo, abrindo respiro sob o roda-teto. */
+/* A hero é só a janela. Quem posiciona é .hero__stage, logo abaixo. */
 .hero{
   position:relative;
   min-height:100svh;
-  display:flex;
-  align-items:center;
-  padding-top:clamp(150px,22vh,250px);
-  padding-bottom:clamp(64px,9vh,110px);
   isolation:isolate;
   overflow:hidden;
+  background:#000;
 }
 
 /* ── Fundo ───────────────────────────────────────────────────────── */
 
 .hero__bg{
+  /* Sem folga nem escala: a arte precisa cair exatamente no mesmo
+     enquadramento de .hero__stage, senão texto e desenho saem de
+     registro. O parallax ficou só no conteúdo. */
   position:absolute;
-  inset:-3%;                 /* folga para o parallax não revelar bordas */
+  inset:0;
   z-index:0;
   pointer-events:none;
-  transform:translate3d(calc(var(--mx) * -14px),calc(var(--my) * -14px),0) scale(1.03);
-  transition:transform .9s var(--ease-soft);
-  will-change:transform;
 }
 
 .hero__bg picture{display:contents}
 
-.hero__bg-img,
-.hero__bg-canvas{
+.hero__bg-img{
   position:absolute;
   inset:0;
   width:100%;
@@ -320,79 +295,154 @@ body.is-intro .cta{animation-play-state:paused}
   object-fit:cover;
 }
 
-.hero__bg-canvas{opacity:0;transition:opacity 1.1s var(--ease-soft)}
-.hero.is-gl .hero__bg-canvas{opacity:1}
-.hero.is-gl .hero__bg-img{opacity:0;transition:opacity 1.1s var(--ease-soft)}
-
-/* Só assenta o topo — a arte precisa permanecer aparente */
-.hero__vignette{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.10) 16%,transparent 32%);
-}
-
-/* Grão fino: tira o banding do gradiente sem custar composição */
+/* Grão fino: tira o banding do gradiente sem custar composição.
+   Parado de propósito — nada se mexe sozinho sobre a fotografia. */
 .hero__grain{
   position:absolute;inset:-20%;
   opacity:.045;
   mix-blend-mode:overlay;
   pointer-events:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 7s steps(6) infinite;
-}
-@keyframes grain{
-  0%,100%{transform:translate3d(0,0,0)}
-  20%{transform:translate3d(-2%,1.5%,0)}
-  40%{transform:translate3d(1.5%,-2%,0)}
-  60%{transform:translate3d(-1%,-1.5%,0)}
-  80%{transform:translate3d(2%,1%,0)}
-}
-
-/* ── Liquid flow animation para mobile ────────────────────────────── */
-@keyframes liquidFlow{
-  0%{transform:translateY(0) skewY(0deg)}
-  25%{transform:translateY(-8px) skewY(1deg)}
-  50%{transform:translateY(-12px) skewY(0deg)}
-  75%{transform:translateY(-6px) skewY(-1deg)}
-  100%{transform:translateY(0) skewY(0deg)}
-}
-
-/* ── Gradient pulse no botão mobile ──────────────────────────────── */
-@keyframes ctaPulse{
-  /* opacity:1 em todos os passos: esta animação substitui a "rise", que
-     era quem segurava o botão visível pelo forwards. Sem isso ele some
-     enquanto o dedo está apertando. */
-  0%{opacity:1;background:var(--cta-gradient);box-shadow:0 0 0 0 rgba(127,36,237,.3)}
-  50%{opacity:1;background:var(--cta-gradient);box-shadow:0 0 0 8px rgba(127,36,237,.0)}
-  100%{opacity:1;background:var(--cta-gradient);box-shadow:0 0 0 0 rgba(127,36,237,.0)}
 }
 
 /* ───────────────────────────────────────────────────────────────────
-   Conteúdo — alinhado à esquerda, como na referência
-   ─────────────────────────────────────────────────────────────────── */
+   Conteúdo — coordenadas do frame do Figma
+   ───────────────────────────────────────────────────────────────────
+   .hero__stage reproduz o frame (2560×1440 no desktop, 1170×2532 em
+   retrato) e o cobre do mesmo jeito que `object-fit:cover` cobre a
+   imagem de fundo. Como o palco e a arte sofrem o mesmo corte, logo,
+   título e botão podem ficar nas coordenadas que o Figma exportou e
+   nunca saem do lugar em relação ao desenho.
 
-.hero__inner{
-  /* --t governa toda a escala do bloco. As proporções abaixo saíram
-     medidas da referência: logo = 2.38×--t, respiros = frações de --t.
-     Assim logo, título e botão nunca perdem a relação entre si. */
-  --t:clamp(2.5rem,6.6vw,7.2rem);
+   --u é um pixel do Figma. Todo valor abaixo veio medido do SVG. */
 
-  position:relative;
+.hero__stage{
+  --fw:2560;
+  --fh:1440;
+  --title-top:710;                   /* linha de base 793.357 − ascendente */
+
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:max(100%,calc(100svh * var(--fw) / var(--fh)));
+  aspect-ratio:var(--fw) / var(--fh);
+  translate:-50% -50%;
+  container-type:size;
   z-index:2;
-  width:100%;
-  max-width:1760px;
-  margin-inline:auto;
-  padding-inline:clamp(24px,9vw,200px);
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  text-align:left;
-  transform:translate3d(calc(var(--mx) * 6px),calc(var(--my) * 6px),0);
-  transition:transform 1.1s var(--ease-soft);
+}
+
+/* cqw só vale para quem está dentro do contêiner, nunca para ele mesmo */
+.hero__stage > *{--u:calc(100cqw / var(--fw))}
+
+/* Coordenadas medidas do frame original, do mesmo jeito que o resto.
+   Os dois vêm inline (e não como <img>) porque cada peça responde ao
+   mouse por conta própria — um <img> é opaco ao CSS de fora. */
+.hero__chrome{
+  position:absolute;
+  height:auto;
+  overflow:visible;
+  pointer-events:none;              /* só as peças recebem o mouse */
+}
+
+.hero__chrome--tools{
+  left:calc(472 * var(--u));
+  top:calc(365.374 * var(--u));
+  width:calc(626 * var(--u));
+}
+
+.hero__chrome--player{
+  /* De régua a régua, encostando nos mesmos limites do roda-teto.
+     A altura vem em % porque, no `cover`, a vertical sempre coube:
+     quem transborda é a largura. 1236.494 ÷ 1440 do frame. */
+  left:var(--rail);
+  width:calc(100% - var(--rail) * 2);
+  top:85.87%;
+}
+
+/* ── Barra de ferramentas: cada chip acende como se fosse clicável ── */
+.tool{
+  transform-box:fill-box;
+  transform-origin:center;
+  transition:transform .32s var(--ease);
+}
+.tool__bg{
+  pointer-events:all;               /* o alvo é o chip inteiro, não o ícone */
+  transition:fill-opacity .28s var(--ease-soft);
+}
+.tool path{transition:fill .28s var(--ease-soft)}
+
+@media (hover:hover){
+  .tool:hover{transform:translateY(-1.5px)}
+  .tool:hover .tool__bg{fill-opacity:.16}
+  /* #888/#8B8B8B são os apagados; o branco já está aceso */
+  .tool:hover path[fill="#888888"],
+  .tool:hover path[fill="#8B8B8B"],
+  .tool:hover path[fill="#999999"]{fill:#fff}
+}
+
+/* ── Player ──────────────────────────────────────────────────────────
+   O detalhe nasceu gordo demais para o que é: um apontamento, não um
+   player de verdade. Cada peça encolhe sobre o próprio centro, então
+   o vão de ponta a ponta — que é o que dá a régua da página — fica
+   exatamente onde estava. A trilha não entra na escala: ela afina
+   pelos atributos (6 → 2.5) para não perder comprimento. */
+.pl{
+  --s:1;
+  --dx:0px;
+  transform-box:fill-box;
+  transform-origin:center;
+  /* O translate vem antes da escala, então --dx é medido em unidades do
+     SVG e não encolhe junto com a peça. */
+  transform:translateX(var(--dx)) scale(var(--s));
+  transition:transform .32s var(--ease),filter .32s var(--ease-soft);
+}
+
+/* Os vãos eram os do desenho original, feitos para botões grandes.
+   Com as peças reduzidas eles ficaram enormes, então cada uma recua
+   para fechar a malha: 14 entre os botões, 26 antes do tempo e 30
+   até a trilha, que por sua vez começa mais cedo e termina onde
+   terminava — a extensão de ponta a ponta não mudou. */
+.pl--play{--s:.58;--dx:-38.62px}
+.pl--prev{--s:.66}
+.pl--next{--s:.66;--dx:-77.23px}
+.pl--volume{--s:.70}
+.pl--time{--s:.68;--dx:-147.20px}
+
+.pl__hit{pointer-events:all}
+.pl path{transition:fill .28s var(--ease-soft)}
+
+@media (hover:hover){
+  .pl--prev:hover,
+  .pl--next:hover,
+  .pl--volume:hover{transform:translateX(var(--dx)) scale(calc(var(--s) * 1.2))}
+  /* O botão central já tem sombra no SVG; o hover só a intensifica */
+  .pl--play:hover{
+    transform:translateX(var(--dx)) scale(calc(var(--s) * 1.1));
+    filter:drop-shadow(0 0 10px rgba(230,36,96,.5));
+  }
+}
+
+/* A trilha corre ao passar o mouse no player — a única coisa que se
+   move sozinha aqui, e só enquanto o cursor está em cima. */
+.pl__elapsed{
+  transform:scaleX(0);
+  transform-origin:463.097px 0;
+  transition:transform .9s var(--ease);
+}
+.pl__thumb{pointer-events:none;transition:transform .9s var(--ease)}
+
+@media (hover:hover){
+  .hero__chrome--player:hover .pl__elapsed{transform:scaleX(.28)}
+  .hero__chrome--player:hover .pl__thumb{transform:translateX(331.7px)}
+  .hero__chrome--player:hover .pl--progress{transform:none}
 }
 
 .hero__logo{
-  width:calc(var(--t) * 2.383);      /* 305 ÷ 128 da referência */
-  height:auto;
+  position:absolute;
+  left:calc(474.363 * var(--u));
+  top:calc(599.293 * var(--u));
+  width:calc(302.63 * var(--u));
+  height:calc(56.253 * var(--u));
   opacity:0;
   animation:rise .9s var(--ease) .05s forwards;
 }
@@ -400,13 +450,18 @@ body.is-intro .cta{animation-play-state:paused}
 /* ── Título ──────────────────────────────────────────────────────── */
 
 .hero__title{
-  margin:calc(var(--t) * .34) 0 0;
-  font-size:var(--t);
-  font-weight:300;
-  line-height:.92;                   /* entrelinha curta, como na referência */
-  letter-spacing:-.03em;
+  position:absolute;
+  left:calc(472 * var(--u));
+  top:calc(var(--title-top) * var(--u));
+  margin:0;
   display:flex;
   flex-direction:column;
+  font-size:calc(105.079 * var(--u));
+  font-weight:300;
+  line-height:calc(94 * var(--u));
+  letter-spacing:0;
+  color:#fff;
+  white-space:nowrap;
   cursor:default;
 }
 
@@ -417,171 +472,144 @@ body.is-intro .cta{animation-play-state:paused}
 }
 .ln:nth-child(1){animation-delay:.20s}
 .ln:nth-child(2){animation-delay:.31s}
-.ln:nth-child(3){animation-delay:.42s}
 
-/* Linha 2: cinza #808080, que acende no hover do título */
-.ln--accent{
-  position:relative;
-  align-self:flex-start;
-}
-
-.ln__base{color:var(--ink-muted);transition:color .5s var(--ease-soft)}
-
-/* Camada em gradiente por cima, revelada da esquerda para a direita */
-.ln__fill{
-  position:absolute;
-  inset:0;
-  white-space:nowrap;
-  background:var(--brand-gradient);
+/* Recorte do gradiente que o Figma aplica só na palavra "nível".
+   As duas pontas saíram da faixa que a palavra ocupa dentro do
+   gradiente original (#FF2B1A → #98406D → #7A1FFF). */
+.ln__accent{
+  background:linear-gradient(to right,#943B82 0%,#DF3133 100%);
   -webkit-background-clip:text;
           background-clip:text;
   color:transparent;
-  clip-path:inset(0 100% 0 0);
-  transition:clip-path .68s var(--ease);
-  pointer-events:none;
-}
-
-@media (hover:hover){
-  .hero__title:hover .ln__fill{clip-path:inset(0 0 0 0)}
-  .hero__title:hover .ln__base{color:#6a6a6a}
 }
 
 /* ───────────────────────────────────────────────────────────────────
-   CTA — pílula de vidro escuro + ícone em gradiente (medidos da ref.)
+   CTA — vidro
    ─────────────────────────────────────────────────────────────────── */
 
+/* A geometria continua a do Figma — posição, tamanho e raio não se
+   mexem. O que mudou é a superfície: vidro de verdade, com aro que
+   acompanha o cursor e aura por trás. Sem borda real: a linha de luz
+   é um inset shadow, para a caixa não crescer 1px e sair de registro. */
 .cta{
-  --h:clamp(52px,5.6vw,68px);        /* 80/1080 da referência */
+  position:absolute;
+  left:calc(474 * var(--u));
+  top:calc(955 * var(--u));
+  width:calc(458.776 * var(--u));
+  height:calc(93.0716 * var(--u));
+  border-radius:calc(28.0692 * var(--u));
 
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  gap:calc(var(--h) * .21);
-  margin-top:calc(var(--t) * .33);   /* 45 ÷ 128 da referência */
-  padding:calc(var(--h) * .145) calc(var(--h) * .30) calc(var(--h) * .145) calc(var(--h) * .16);
-  border-radius:calc(var(--h) * .32);
+  /* Mesma lógica dos chips — superfície chapada, sem borda e sem
+     sombra — só que em preto: o botão aprofunda o fundo em vez de
+     clarear. Quem dá o corpo é o desfoque de trás. */
+  background:rgba(0,0,0,.30);
+  -webkit-backdrop-filter:blur(calc(34 * var(--u))) saturate(150%);
+          backdrop-filter:blur(calc(34 * var(--u))) saturate(150%);
+
   text-decoration:none;
-  overflow:hidden;
-  isolation:isolate;
   opacity:0;
-  animation:rise 1s var(--ease) .56s forwards;
-  -webkit-tap-highlight-color:transparent;
-
-  /* ── Liquid Glass ──────────────────────────────────────────────
-     O corpo quase não desfoca: a arte atravessa o botão nítida, só
-     um pouco mais densa e saturada. O que dá a leitura de vidro é a
-     borda (.cta__rim) e os brilhos internos — não o embaçado. */
-  background-color:rgba(6,5,10,.34);
-  background-image:
-    linear-gradient(158deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.012) 38%,rgba(255,255,255,0) 62%);
-  -webkit-backdrop-filter:blur(2px) saturate(150%);
-          backdrop-filter:blur(2px) saturate(150%);
-  /* Sem fios brancos internos: quem desenha a borda é o .cta__rim.
-     Os dois juntos dobravam o traçado. */
-  box-shadow:0 10px 26px -14px rgba(0,0,0,.70);
-  transition:box-shadow .45s var(--ease-soft),background-color .45s var(--ease-soft);
+  /* Entra só com opacidade e `translate`: `transform` fica livre para a
+     inclinação, senão a animação venceria o tilt mesmo depois de acabar. */
+  animation:ctaIn 1s var(--ease) .5s forwards;
+  transform:perspective(900px)
+            rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))
+            translate3d(var(--tx,0px),var(--ty,0px),0)
+            scale(var(--sc,1));
+  transition:background .4s var(--ease-soft),
+             box-shadow .4s var(--ease-soft),
+             transform .5s var(--ease-soft);
 }
 
-/* O aro é a peça principal: uma faixa fina que refrata — desfoca de
-   leve, satura forte e clareia — imitando a luz dobrando na quina. */
+@keyframes ctaIn{
+  from{opacity:0;translate:0 24px}
+  to{opacity:1;translate:0 0}
+}
+
+/* Aro de luz que nasce onde o cursor está. O par de máscaras recorta o
+   miolo e deixa só a moldura: é a técnica de borda em gradiente. */
+.cta.is-live .cta__rim{opacity:1}
+
 .cta__rim{
   position:absolute;
   inset:0;
   border-radius:inherit;
-  /* 1px e alfa ~.18: é a intensidade medida na referência (luminância
-     40–55 sobre preto). Mais que isso o traçado salta demais. */
-  padding:1px;
-  background:linear-gradient(145deg,
-    rgba(255,255,255,.24) 0%,
-    rgba(255,255,255,.10) 34%,
-    rgba(255,255,255,.08) 62%,
-    rgba(255,255,255,.17) 100%);
-  -webkit-backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
-          backdrop-filter:blur(1px) saturate(170%) brightness(1.12);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  padding:max(1px,calc(2.5 * var(--u)));
+  background:radial-gradient(circle at var(--x,50%) var(--y,50%),
+             rgba(230,36,96,.95) 0%,rgba(122,31,255,.45) 35%,transparent 62%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+          mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
           mask-composite:exclude;
-  pointer-events:none;
-  z-index:1;
-  transition:opacity .45s var(--ease-soft);
-}
-
-/* Gradiente que varre por dentro do botão no hover */
-.cta::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:var(--cta-gradient);
-  transform:translateX(-100.5%);
-  transition:transform .66s var(--ease);
-  z-index:-1;
-}
-
-/* Halo difuso atrás do botão */
-.cta::after{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  border-radius:inherit;
-  background:var(--cta-gradient);
-  filter:blur(30px);
   opacity:0;
-  transform:scale(.86);
-  transition:opacity .5s var(--ease-soft),transform .6s var(--ease);
-  z-index:-2;
+  transition:opacity .3s var(--ease-soft);
   pointer-events:none;
+}
+
+/* Aura: um borrão da marca que segue o cursor por trás do botão */
+.cta__aura{
+  position:absolute;
+  left:calc(474 * var(--u));
+  top:calc(955 * var(--u));
+  width:calc(458.776 * var(--u));
+  height:calc(93.0716 * var(--u));
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(230,36,96,.55) 0%,rgba(122,31,255,.28) 45%,transparent 72%);
+  filter:blur(calc(38 * var(--u)));
+  mix-blend-mode:screen;
+  opacity:0;
+  transform:translate3d(var(--ax,0px),var(--ay,0px),0) scale(var(--as,1));
+  transition:opacity .4s var(--ease-soft),transform .5s var(--ease-soft);
+  pointer-events:none;
+}
+
+.cta__label{
+  position:absolute;
+  left:calc(41.35 * var(--u));         /* 515.35 − 474 */
+  top:0;
+  height:100%;
+  display:flex;
+  align-items:center;
+  font-size:calc(32.7755 * var(--u));
+  font-weight:500;
+  color:#fff;
+  white-space:nowrap;
 }
 
 .cta__icon{
-  flex:none;
+  position:absolute;
+  left:calc(374.57 * var(--u));        /* 848.57 − 474 */
+  top:calc(27.097 * var(--u));         /* 982.097 − 955 */
+  width:calc(38.8769 * var(--u));
+  height:calc(38.8769 * var(--u));
+  border-radius:50%;
+  background:#fff;
+  color:#2B1322;
   display:grid;
   place-items:center;
-  width:calc(var(--h) * .725);       /* 58/80 da referência */
-  height:calc(var(--h) * .60);       /* 48/80 da referência */
-  border-radius:calc(var(--h) * .175);
-  background:var(--cta-gradient);
-  color:#fff;
-  transition:transform .5s var(--ease),
-             background .45s var(--ease-soft),
-             color .45s var(--ease-soft);
+  transition:transform .4s var(--ease);
 }
-.cta__icon svg{width:62%;height:62%}
+.cta__icon svg{width:58%;height:58%}
 
-.cta__label{
-  font-size:clamp(.95rem,1.15vw,1.1rem);
-  font-weight:400;
-  letter-spacing:.002em;
-  color:#fff;
-  white-space:nowrap;
-  /* segura o contraste quando o gradiente chega na faixa vermelha */
-  text-shadow:0 1px 2px rgba(0,0,0,.35);
-}
-
-/* ── Hover / focus ── */
 @media (hover:hover){
-  .cta:hover{
-    background-color:rgba(6,5,10,.10);
-    box-shadow:0 16px 36px -14px rgba(0,0,0,.8);
+  /* Em repouso não há borda nenhuma. Ela nasce no hover, junto com o
+     aro de luz: a linha branca dá o contorno e o aro põe a cor da
+     marca onde o cursor está. */
+  .cta:hover,
+  .cta.is-live{
+    background:rgba(0,0,0,.44);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.24);
   }
-  /* Com o gradiente preenchendo, o aro recua para não brigar */
-  .cta:hover .cta__rim{opacity:.5}
-  .cta:hover::before{transform:translateX(0)}
-  .cta:hover::after{opacity:.55;transform:scale(1)}
-  /* o chip inverte: sem isso ele sumiria dentro do próprio gradiente */
-  .cta:hover .cta__icon{
-    transform:scale(.94);
-    background:#fff;
-    background-image:none;
-    color:var(--cta-1);
-  }
+  .cta:hover .cta__rim{opacity:1}
+  .cta:hover .cta__icon{transform:translate3d(calc(3 * var(--u)),calc(-3 * var(--u)),0)}
+  .cta:hover + .cta__aura,
+  .cta__aura.is-on{opacity:1}
 }
 
-.cta:focus-visible{outline:none}
-.cta:focus-visible::before{transform:translateX(0)}
-.cta:focus-visible{box-shadow:0 0 0 2px #000,0 0 0 4px rgba(255,255,255,.9)}
-
-.cta:active{transform:scale(.985)}
+.cta:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 calc(3 * var(--u)) rgba(255,255,255,.9);
+}
+.cta:active{--sc:.97}
 
 /* ───────────────────────────────────────────────────────────────────
    Entradas
@@ -811,100 +839,124 @@ body.is-locked{overflow:hidden}
   }
 }
 
-/* Enquadramento igual ao do mock. O inset -3% + scale(1.03) existem
-   para o parallax do cursor nunca revelar borda ao transladar ±14px —
-   juntos ampliam a arte em 9.2%, cortando ~4.6% de cada lado.
-   Sem cursor fino nao ha parallax (--mx/--my ficam em 0 para sempre),
-   entao a folga so afastava a arte do enquadramento da referencia.
-   A condicao espelha o finePoint do hero.js: escopar por retrato seria
-   errado, pois uma janela de desktop estreita tem cursor e precisa
-   da folga. */
-@media (hover:none),(pointer:coarse){
-  .hero__bg{inset:0;transform:none}
-}
-
-/* ── Retrato ─────────────────────────────────
-   Proporções medidas de AJUSTES/mobile-reference.jpg (1080×1920):
-   recuo lateral 213/1080, título 110/1080, logo 229/110 do título,
-   bloco começando em 22.7% da altura. */
+/* ── Retrato — frame mobile do Figma (1170×2532) ──────────────────
+   Mesmo sistema do desktop: só trocam as dimensões do frame e as
+   coordenadas. Tudo abaixo saiu medido de FIGMA/hero-mobile.svg. */
 @media (max-aspect-ratio: 0.9999/1){
-  /* Liquid de reserva: quem faz o efeito no mobile agora é o shader
-     (.is-gl). Isto só entra se o WebGL não subir — aparelho fraco,
-     economia de dados ou contexto perdido. */
-  .hero:not(.is-gl) .hero__bg-img{
-    animation:liquidFlow 6s ease-in-out infinite;
+  .hero__stage{
+    --fw:1170;
+    --fh:2532;
+    --title-top:1593;                  /* linha de base 1686.48 − ascendente */
   }
 
-  .hero{
-    align-items:flex-start;
-    padding-top:clamp(120px,22.7vh,260px);
-    padding-bottom:clamp(48px,8vh,110px);
+  .hero__chrome{display:none}
+
+  .hero__logo{
+    left:calc(148.771 * var(--u));
+    top:calc(1442.55 * var(--u));
+    width:calc(374.703 * var(--u));
+    height:calc(69.66 * var(--u));
   }
-  .hero__inner{
-    --t:clamp(2.1rem,10.2vw,5rem);
-    padding-inline:clamp(24px,19.7vw,150px);
+
+  .hero__title{
+    left:calc(145.846 * var(--u));
+    font-size:calc(119.641 * var(--u));
+    line-height:calc(106 * var(--u));
   }
-  /* No retrato a marca é um pouco menor em relação ao título */
-  .hero__logo{width:calc(var(--t) * 2.08)}
-  .hero__title{line-height:.90;margin-top:calc(var(--t) * .89)}
-  /* Botão nas medidas exatas de mobile-reference.jpg (1080px de base):
-     altura 64, chip 52×44, recuos 12/14, vão 17, rótulo 23.
-     Tudo em vw para escalar igual ao mock. */
+
   .cta{
-    /* A razão botão/título do desktop (68÷95 ≈ .72) daria 27px aqui —
-       o valor antigo — e isso fica abaixo do alvo mínimo de toque.
-       Esta faixa é o meio-termo: cumpre os 44px sem a pílula brigar
-       de igual para igual com o título. */
-    --h:clamp(42px,11.5vw,54px);
-    gap:calc(var(--h) * .266);                    /* 17 ÷ 64 */
-    padding:calc(var(--h) * .156) calc(var(--h) * .25)
-            calc(var(--h) * .156) calc(var(--h) * .1875);
-    border-radius:calc(var(--h) * .30);
-    margin-top:calc(var(--t) * .66);
+    left:calc(145.002 * var(--u));
+    top:calc(1894 * var(--u));
+    width:calc(600 * var(--u));
+    height:calc(115 * var(--u));
+    border-radius:calc(34.7584 * var(--u));
+    /* No retrato o botão usa a mesma superfície dos chips da coluna:
+       #F8F8F8 a 6%. Ali embaixo ele já está sobre a parte mais escura
+       da arte, então o preto do desktop não tem o que aprofundar. */
+    background:rgba(248,248,248,.06);
   }
-
-  /* Ativa animação gradiente do botão ao clicar */
-  .cta:active{
-    animation:ctaPulse 1.5s ease-out;
+  .cta:hover,
+  .cta.is-live{background:rgba(255,255,255,.16)}
+  /* A aura acompanha a nova caixa */
+  .cta__aura{
+    left:calc(145.002 * var(--u));
+    top:calc(1894 * var(--u));
+    width:calc(600 * var(--u));
+    height:calc(115 * var(--u));
+  }
+  .cta__label{
+    left:calc(66.828 * var(--u));      /* 211.83 − 145.002 */
+    font-size:calc(40.5862 * var(--u));
   }
   .cta__icon{
-    width:calc(var(--h) * .8125);                 /* 52 ÷ 64 */
-    height:calc(var(--h) * .6875);                /* 44 ÷ 64 */
-    border-radius:calc(var(--h) * .22);
+    left:calc(480.103 * var(--u));     /* 625.105 − 145.002 */
+    top:calc(33.43 * var(--u));        /* 1927.43 − 1894 */
+    width:calc(48.1417 * var(--u));
+    height:calc(48.1417 * var(--u));
   }
-  /* O rótulo não acompanha --h: na largura de um celular ele estouraria
-     o recuo lateral da hero. Fica na mesma faixa do desktop. */
-  .cta__label{font-size:clamp(.82rem,3.4vw,.95rem)}
 
-  /* Projetos à esquerda, contatos à direita — como na referência */
+  /* No retrato as opções viram uma coluna na borda esquerda da foto.
+     Atravessadas no topo elas disputavam a faixa mais clara da arte e
+     ficavam espremidas entre o rosto e a borda; na vertical, sobre a
+     coluna escura da esquerda, cada uma respira e lê de primeira. */
   .topbar{
-    justify-content:space-between;
-    padding-block:clamp(28px,9vh,80px) 0;
-    padding-inline:clamp(20px,19.7vw,150px);
+    --sw:max(100vw,calc(100svh * 1170 / 2532));
+
+    /* Mais abaixo, na altura do ombro: ali a coluna cai sobre a parte
+       lisa e escura da foto, em vez de encostar no rosto. O teto de
+       300px impede que ela alcance o logo em tela alta. */
+    top:clamp(150px,32vh,300px);
+    right:auto;
+    width:auto;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:flex-start;
+    gap:10px;
+    /* A coluna cai na mesma vertical do logo, do título e do botão.
+       O cálculo repete o enquadramento do palco: metade da sobra do
+       `cover` mais os 145.002 do frame mobile. O mínimo de 16px existe
+       para ela nunca encostar na borda em tela muito estreita. */
+    padding:0 0 0 max(16px,calc((100vw - var(--sw)) / 2 + var(--sw) * 145.002 / 1170));
   }
+  .topbar__nav{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  /* Coluna só de ícones: quatro quadrados do mesmo tamanho lêem como
+     uma peça só. A pílula larga do Projetos no meio de três quadrados
+     era o que fazia o conjunto parecer bagunçado. */
+  .topbar__chip{width:var(--h);padding-inline:0}
+  .topbar__glyph{display:block;width:17px;height:17px}
+  .topbar__text{
+    position:absolute;
+    width:1px;height:1px;
+    overflow:hidden;
+    clip-path:inset(50%);
+    white-space:nowrap;
+  }
+  .topbar__count{
+    position:absolute;
+    top:-5px;right:-5px;
+    min-width:16px;height:16px;
+    padding-inline:4px;
+    font-size:9.5px;
+    background:var(--brand-gradient);
+    color:#fff;
+  }
+  #openProjects{position:relative}
 }
 
-/* Só telas realmente estreitas abrem mão do recuo da referência */
+/* O palco escala sozinho, então aqui sobra só o roda-teto */
 @media (max-width:340px){
-  .hero__inner{--t:clamp(1.8rem,9.4vw,2.4rem);padding-inline:clamp(18px,13vw,52px)}
   .topbar{padding-inline:clamp(16px,13vw,52px)}
-  .cta__label{font-size:.88rem}
 }
 
 /* Em retrato o selo de disponibilidade sai: a referência põe Projetos
    à esquerda e os contatos à direita, sem terceiro elemento. */
 @media (max-aspect-ratio: 0.9999/1){
   .topbar__status{display:none}
-}
-
-/* Paisagem baixa (notebook curto / celular deitado).
-   min-height continua 100svh: o bloco encolhe via --t, então a arte
-   segue preenchendo a tela em vez de deixar uma faixa preta embaixo.
-   O topo precisa passar sob o roda-teto sem encostar nele. */
-@media (max-height:560px) and (orientation:landscape){
-  .hero{padding-top:104px;padding-bottom:48px}
-  .hero__inner{--t:clamp(1.9rem,7.6vh,3.4rem)}
-  .topbar{padding-block:16px}
 }
 
 /* ───────────────────────────────────────────────────────────────────
@@ -918,7 +970,6 @@ body.is-locked{overflow:hidden}
     transition-duration:.01ms !important;
   }
   .hero__logo,.ln,.cta{opacity:1}
-  .hero__bg,.hero__inner{transform:none}
   .hero__grain{animation:none}
   /* Sem cortina: quem pediu menos movimento vai direto ao site */
   .intro{display:none}
